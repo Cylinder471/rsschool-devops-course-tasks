@@ -1,0 +1,124 @@
+name: 'Terraform'
+
+on:
+  push:
+    branches:
+      - main
+      - task_1
+  pull_request:
+    branches:
+      - main
+
+permissions:
+  id-token: write
+  contents: read
+
+env:
+  AWS_ACC_ID: ${{ secrets.AWS_ACC_ID }}
+
+jobs:
+  terraform-check:
+    name: 'Terraform check'
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v4
+
+    - name: Cache Terraform Directory
+      uses: actions/cache@v3
+      with:
+        path: task-1/test-resources
+        key: ${{ runner.os }}-terraform-${{ hashFiles('task-1/test-resources/**') }}
+        restore-keys: |
+          ${{ runner.os }}-terraform-
+
+    - name: Setup Terraform
+      uses: hashicorp/setup-terraform@v3
+
+    - name: Configure AWS credentials
+      uses: aws-actions/configure-aws-credentials@v4
+      with:
+        role-to-assume: arn:aws:iam::${{ env.AWS_ACC_ID }}:role/GithubActionsRole
+        role-session-name: GithubActionsRole
+        aws-region: ap-southeast-1
+
+    - name: Terraform Init
+      run: terraform init
+      working-directory: task-1/test-resources
+
+    - name: Terraform Format
+      run: terraform fmt
+      working-directory: task-1/test-resources
+
+
+  terraform-plan:
+    name: 'Terraform plan'
+    runs-on: ubuntu-latest
+    needs: terraform-check
+
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v4
+
+    - name: Cache Terraform Directory
+      uses: actions/cache@v3
+      with:
+        path: task-1/test-resources
+        key: ${{ runner.os }}-terraform-${{ hashFiles('task-1/test-resources/**') }}
+        restore-keys: |
+          ${{ runner.os }}-terraform-
+
+    - name: Setup Terraform
+      uses: hashicorp/setup-terraform@v3
+
+    - name: Configure AWS credentials
+      uses: aws-actions/configure-aws-credentials@v4
+      with:
+        role-to-assume: arn:aws:iam::${{ env.AWS_ACC_ID }}:role/GithubActionsRole
+        role-session-name: GithubActionsRole
+        aws-region: ap-southeast-1
+
+    - name: Terraform Init
+      run: terraform init
+      working-directory: task-1/test-resources
+
+    - name: Terraform Planning
+      run: terraform plan -input=false
+      working-directory: task-1/test-resources
+
+  terraform-apply:
+    name: 'Terraform apply'
+    runs-on: ubuntu-latest
+    needs: terraform-plan
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Cache Terraform Directory
+      uses: actions/cache@v3
+      with:
+        path: task-1/test-resources
+        key: ${{ runner.os }}-terraform-${{ hashFiles('task-1/test-resources/**') }}
+        restore-keys: |
+          ${{ runner.os }}-terraform-
+
+    - name: Configure AWS credentials
+      uses: aws-actions/configure-aws-credentials@v4
+      with:
+        role-to-assume: arn:aws:iam::${{ env.AWS_ACC_ID }}:role/GithubActionsRole
+        role-session-name: GithubActionsRole
+        aws-region: ap-southeast-1
+
+    - name: Set up Terraform
+      uses: hashicorp/setup-terraform@v3
+
+    - name: Terraform Init
+      run: terraform init
+      working-directory: task-1/test-resources
+
+    - name: Terraform Apply
+      if: (github.ref == 'refs/heads/task_1' || github.ref == 'refs/heads/main') && github.event_name == 'push'
+      run: terraform apply -auto-approve -input=false
+      working-directory: task-1/test-resources
