@@ -7,13 +7,13 @@ terraform {
   }
   required_version = ">= 1.11.3"
   backend "s3" {
-    bucket  = "rsschool-devops-course-tasks"
-    key     = "dev/terraform.tfstate"
-    region  = "us-east-1"
+    bucket = "rsschool-devops-course-tasks"
+    key    = "dev/terraform.tfstate"
+    region = "us-east-1"
   }
 }
 
 provider "aws" {
-  region  = var.aws_region
+  region = var.aws_region
 }
 
