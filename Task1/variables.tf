@@ -11,11 +11,6 @@ variable "policies" {
     "arn:aws:iam::aws:policy/AmazonEventBridgeFullAccess"
   ]
 }
-variable "aws_profile" {
-  description = "AWS CLI profile to use"
-  type        = string
-  default     = "devops"
-}
 
 variable "aws_region" {
   description = "AWS region to deploy resources"
