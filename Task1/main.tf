@@ -10,12 +10,10 @@ terraform {
     bucket  = "rsschool-devops-course-tasks"
     key     = "dev/terraform.tfstate"
     region  = "us-east-1"
-    profile = "devops"
   }
 }
 
 provider "aws" {
-  profile = var.aws_profile
   region  = var.aws_region
 }
 
