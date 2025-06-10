@@ -17,7 +17,7 @@ jobs:
       - name: Setup Terraform
         uses: hashicorp/setup-terraform@v2
         with:
-          terraform_version: 1.11.3
+          terraform_version: 1.6.0
       - name: Terraform Format
         run: terraform fmt -check
         working-directory: Task1
@@ -31,7 +31,7 @@ jobs:
       - name: Setup Terraform
         uses: hashicorp/setup-terraform@v2
         with:
-          terraform_version: 1.11.3
+          terraform_version: 1.6.0
       - name: Configure AWS Credentials
         uses: aws-actions/configure-aws-credentials@v2
         with:
@@ -40,6 +40,7 @@ jobs:
           aws-region: us-east-1
       - name: Terraform Init
         run: terraform init -reconfigure
+        working-directory: Task1
       - name: Terraform Plan
         run: terraform plan
         working-directory: Task1
@@ -54,7 +55,7 @@ jobs:
       - name: Setup Terraform
         uses: hashicorp/setup-terraform@v2
         with:
-          terraform_version: 1.11.3
+          terraform_version: 1.6.0
       - name: Configure AWS Credentials
         uses: aws-actions/configure-aws-credentials@v2
         with:
@@ -63,6 +64,7 @@ jobs:
           aws-region: us-east-1
       - name: Terraform Init
         run: terraform init -reconfigure
+        working-directory: Task1
       - name: Terraform Apply
         run: terraform apply -auto-approve
         working-directory: Task1
