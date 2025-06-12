@@ -2,7 +2,6 @@ AWS Account Configuration and Terraform Deployment
 Overview
 This repository contains Terraform configurations to set up an AWS account with necessary permissions and security configurations, deploy S3 buckets for Terraform states, and create a GitHub Actions workflow for continuous deployment.
 
-
 Table of Contents
 Prerequisites
 Installation
