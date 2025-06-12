@@ -14,7 +14,7 @@ resource "aws_iam_role" "github_actions_role" {
           StringEquals = {
             "token.actions.githubusercontent.com:aud" = "sts.amazonaws.com",
           },
-          "StringLike": {
+          "StringLike" : {
             "token.actions.githubusercontent.com:sub" = "repo:Cylinder471/rsschool-devops-course-tasks:*"
           },
         }
