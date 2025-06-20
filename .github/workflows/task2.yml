@@ -56,6 +56,10 @@ jobs:
     - name: Checkout
       uses: actions/checkout@v4
 
+    - name: Setup Terraform
+      uses: hashicorp/setup-terraform@v3
+
+
     - name: Cache Terraform Directory
       uses: actions/cache@v3
       with:
@@ -87,6 +91,9 @@ jobs:
     steps:
     - name: Checkout code
       uses: actions/checkout@v4
+      
+    - name: Setup Terraform
+      uses: hashicorp/setup-terraform@v3
 
     - name: Cache Terraform Directory
       uses: actions/cache@v3
