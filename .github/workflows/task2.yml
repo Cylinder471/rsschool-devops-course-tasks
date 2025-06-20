@@ -1,0 +1,107 @@
+name: 'vpc'
+
+on:
+  push:
+    branches:
+      - task_2
+
+permissions:
+  id-token: write
+  contents: read
+
+env:
+  AWS_ACC_ID: ${{ secrets.AWS_ACC_ID }}
+
+jobs:
+  terraform-check:
+    name: 'Terraform check'
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v4
+
+    - name: Setup Terraform
+      uses: hashicorp/setup-terraform@v3
+
+    - name: Cache Terraform Directory
+      uses: actions/cache@v3
+      with:
+        path: Task2
+        key: ${{ runner.os }}-vpc-${{ hashFiles('task-2/vpc/**') }}
+        restore-keys: |
+          ${{ runner.os }}-vpc-
+
+    - name: Configure AWS credentials
+      uses: aws-actions/configure-aws-credentials@v4
+      with:
+        role-to-assume: arn:aws:iam::${{ env.AWS_ACC_ID }}:role/GithubActionsRole
+        aws-region: us-east-1
+
+    - name: Terraform Init
+      run: terraform init
+      working-directory: Task2
+
+    - name: Terraform Format
+      run: terraform fmt
+      working-directory: Task2
+
+
+  terraform-plan:
+    name: 'Terraform plan'
+    runs-on: ubuntu-latest
+    needs: terraform-check
+
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v4
+
+    - name: Cache Terraform Directory
+      uses: actions/cache@v3
+      with:
+        path: Task2
+        key: ${{ runner.os }}-vpc-${{ hashFiles('task-2/vpc/**') }}
+        restore-keys: |
+          ${{ runner.os }}-vpc-
+
+    - name: Configure AWS credentials
+      uses: aws-actions/configure-aws-credentials@v4
+      with:
+        role-to-assume: arn:aws:iam::${{ env.AWS_ACC_ID }}:role/GithubActionsRole
+        aws-region: us-east-1
+
+    - name: Terraform Init
+      run: terraform init
+      working-directory: Task2
+
+    - name: Terraform Planning
+      run: terraform plan -input=false
+      working-directory: Task2
+
+
+  terraform-apply:
+    name: 'Terraform apply'
+    runs-on: ubuntu-latest
+    needs: terraform-plan
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Cache Terraform Directory
+      uses: actions/cache@v3
+      with:
+        path: Task2
+        key: ${{ runner.os }}-vpc-${{ hashFiles('Task2 }}
+        restore-keys: |
+          ${{ runner.os }}-vpc-
+
+    - name: Configure AWS credentials
+      uses: aws-actions/configure-aws-credentials@v4
+      with:
+        role-to-assume: arn:aws:iam::${{ env.AWS_ACC_ID }}:role/GithubActionsRole
+        aws-region: us-east-1
+
+    - name: Terraform Apply
+      run: terraform apply -auto-approve -input=false
+      working-directory: Task2
