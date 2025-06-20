@@ -11,7 +11,7 @@ variable "project_name" {
 variable "instance_type" {
   description = "type of the instanse to for bastion"
   type        = string
-  default     = "t3.micro"
+  default     = "t2.micro"
 }
 variable "vpc_cidr" {
   description = "CIDR block for VPC"
