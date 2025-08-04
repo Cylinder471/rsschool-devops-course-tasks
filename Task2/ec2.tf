@@ -6,12 +6,14 @@ resource "aws_instance" "in_private1" {
   key_name                = "MyServer1"
   user_data = <<-EOF
               #!/bin/bash
-              curl -sfL https://get.k3s.io | INSTALL_K3S_EXEC='server' K3S_TOKEN='l%TH]c4VvCT<Xj{' K3S_KUBECONFIG_MODE='644' sh -s -
+              TOKEN=$(aws ssm get-parameter --name "/edu/${var.project_name}/k3s/token" --with-decryption --query "Parameter.Value" --output text --region ${var.aws_region})
+              curl -sfL https://get.k3s.io | INSTALL_K3S_EXEC='server' K3S_TOKEN="$${TOKEN}" K3S_KUBECONFIG_MODE='644' sh -s -
               EOF
   tags = {
     Name = "${var.project_name}-private1"
   }
 }
+data "aws_caller_identity" "current" {}
 resource "aws_instance" "in_private2" {
   ami                     = data.aws_ami.latest_ubuntu.id
   instance_type           = var.instance_type
