@@ -4,6 +4,11 @@ resource "aws_instance" "in_private1" {
   subnet_id               = aws_subnet.private[0].id
   vpc_security_group_ids  = [aws_security_group.all_nodes.id, aws_security_group.k3s_sg.id]
   key_name                = "MyServer1"
+  root_block_device {
+    volume_size = 10           # Размер в гигабайтах
+    volume_type = "gp3"        # Тип диска (например, gp2, gp3, io1 и т.д.)
+    delete_on_termination = true
+  }
   user_data = <<-EOF
               #!/bin/bash
               TOKEN=$(aws ssm get-parameter --name "/edu/${var.project_name}/k3s/token" --with-decryption --query "Parameter.Value" --output text --region ${var.aws_region})
@@ -25,10 +30,11 @@ resource "aws_instance" "in_private2" {
     volume_type = "gp3"        # Тип диска (например, gp2, gp3, io1 и т.д.)
     delete_on_termination = true
   }
-    user_data              = <<-EOF
+  user_data = <<-EOF
               #!/bin/bash
+              TOKEN=$(aws ssm get-parameter --name "/edu/${var.project_name}/k3s/token" --with-decryption --query "Parameter.Value" --output text --region ${var.aws_region})
               K3S_URL="https://${aws_instance.in_private1.private_ip}:6443"
-              curl -sfL https://get.k3s.io | INSTALL_K3S_EXEC="agent --server $K3S_URL --token 'l%TH]c4VvCT<Xj{'" sh -s -
+              curl -sfL https://get.k3s.io | K3S_URL="$K3S_URL" K3S_TOKEN="$TOKEN" sh -
               EOF
   tags = {
     Name = "${var.project_name}-private2"
