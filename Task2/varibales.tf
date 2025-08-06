@@ -54,3 +54,7 @@ variable "availability_zone_2" {
   type        = string
   default     = "us-east-1b"
 }
+
+variable "kms_key_id" {
+  default = "alias/aws/ssm"  
+}
