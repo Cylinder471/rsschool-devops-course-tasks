@@ -1,13 +1,12 @@
 #!/bin/bash
 set -e
-
+sleep 200
 sudo hostnamectl set-hostname ${hostname}
 
 curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip"
 sudo apt update && sudo apt install -y unzip
 unzip awscliv2.zip
 sudo ./aws/install
-
 KUBECONFIG_CONTENT=$(aws ssm get-parameter --name "/edu/${project}/k3s/kubeconfig" --with-decryption --query "Parameter.Value" --output text --region ${aws_region})
 echo "Token is: $KUBECONFIG_CONTENT" >> /tmp/user_data.log
 curl -LO "https://dl.k8s.io/release/$(curl -L -s https://dl.k8s.io/release/stable.txt)/bin/linux/amd64/kubectl"

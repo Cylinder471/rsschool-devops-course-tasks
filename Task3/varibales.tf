@@ -3,6 +3,11 @@ variable "aws_region" {
   type        = string
   default     = "us-east-1"
 }
+variable "ssh_key_path" {
+  description = "Path to the SSH private key for bastion access"
+  type        = string
+  default     = "~/.ssh/MyServer1.pem"
+}
 variable "project_name" {
   description = "Project name"
   type        = string

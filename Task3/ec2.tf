@@ -1,3 +1,4 @@
+
 output "rendered_user_data" {
   value = templatefile("${path.module}/k3s_master.sh", {
     hostname   = "${var.project_name}-k3s-master-node"
@@ -9,6 +10,7 @@ resource "aws_instance" "in_private1" {
   ami                     = data.aws_ami.latest_ubuntu.id
   instance_type           = "t3.small"
   subnet_id               = aws_subnet.private[0].id
+  depends_on = [ aws_nat_gateway.natgw ]
   vpc_security_group_ids  = [aws_security_group.all_nodes.id, aws_security_group.k3s_sg.id]
   key_name                = "MyServer1"
   iam_instance_profile    = aws_iam_instance_profile.k3s_worker_profile.name
