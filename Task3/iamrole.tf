@@ -66,17 +66,13 @@ resource "aws_iam_policy" "github_actions_ssm" {
         Action = [
           "ssm:PutParameter",
           "ssm:GetParameter",
-          "ssm:GetParameters",
+          "ssm:GetParametesrs",
           "ssm:DeleteParameter"
         ]
         Resource = "arn:aws:ssm:${var.aws_region}:${data.aws_caller_identity.current.account_id}:parameter/edu/${var.project_name}/k3s/*"
       }
     ]
   })
-}
-
-data "aws_iam_role" "github_actions_role" {
-  name = "GithubActionsRole"
 }
 
 resource "aws_iam_role_policy_attachment" "github_actions_ssm_attach" {
