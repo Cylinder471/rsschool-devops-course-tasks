@@ -113,6 +113,9 @@ jobs:
     - name: Terraform Init
       run: terraform init
       working-directory: Task3
+
+    - name: Who am I
+      run: aws sts get-caller-identity  
       
     - name: Terraform Apply
       run: terraform apply -auto-approve -input=false
