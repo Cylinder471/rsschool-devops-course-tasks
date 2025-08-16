@@ -53,3 +53,34 @@ resource "aws_iam_instance_profile" "k3s_worker_profile" {
   name = "${var.project_name}-k3s-worker-profile"
   role = aws_iam_role.ec2_role.name
 }
+
+resource "aws_iam_policy" "github_actions_ssm" {
+  name        = "${var.project_name}-github-actions-ssm-policy"
+  description = "Allow GitHub Actions workflow to manage SSM parameters for k3s"
+
+  policy = jsonencode({
+    Version = "2012-10-17"
+    Statement = [
+      {
+        Effect   = "Allow"
+        Action   = [
+          "ssm:PutParameter",
+          "ssm:GetParameter",
+          "ssm:DeleteParameter"
+        ]
+        Resource = [
+          "arn:aws:ssm:${var.aws_region}:${data.aws_caller_identity.current.account_id}:parameter/edu/${var.project_name}/k3s/token",
+          "arn:aws:ssm:${var.aws_region}:${data.aws_caller_identity.current.account_id}:parameter/edu/${var.project_name}/k3s/kubeconfig"
+        ]
+      }
+    ]
+  })
+}
+
+# Привязка политики к GitHub OIDC роли
+resource "aws_iam_role_policy_attachment" "github_actions_attach" {
+  role       = aws_iam_role.github_actions.name
+  policy_arn = aws_iam_policy.github_actions_ssm.arn
+}
+
+data "aws_caller_identity" "current" {}
