@@ -66,7 +66,7 @@ resource "aws_iam_policy" "github_actions_ssm" {
         Action = [
           "ssm:PutParameter",
           "ssm:GetParameter",
-          "ssm:GetParametesrs",
+          "ssm:GetParameters",
           "ssm:DeleteParameter"
         ]
         Resource = "arn:aws:ssm:${var.aws_region}:${data.aws_caller_identity.current.account_id}:parameter/edu/${var.project_name}/k3s/*"
