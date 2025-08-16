@@ -84,6 +84,7 @@ jobs:
 
 
   terraform-apply:
+    
     name: 'Terraform apply'
     runs-on: ubuntu-latest
     needs: terraform-plan
@@ -109,6 +110,10 @@ jobs:
         role-to-assume: arn:aws:iam::${{ env.AWS_ACC_ID }}:role/GithubActionsRole
         aws-region: us-east-1
 
+    - name: Terraform Init
+      run: terraform init
+      working-directory: Task3
+      
     - name: Terraform Apply
       run: terraform apply -auto-approve -input=false
       working-directory: Task3
