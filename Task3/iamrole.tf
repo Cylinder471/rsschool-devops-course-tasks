@@ -56,9 +56,9 @@ resource "aws_iam_instance_profile" "k3s_worker_profile" {
 }
 
 resource "aws_iam_policy" "github_actions_ssm" {
-  name = "github-actions-ssm-policy"
-
-  policy = jsonencode({
+  name        = "github-actions-ssm-policy"
+  description = "Allow GitHub Actions to put/get/delete SecureString kubeconfig in SSM"
+  policy      = jsonencode({
     Version = "2012-10-17"
     Statement = [
       {
@@ -69,13 +69,14 @@ resource "aws_iam_policy" "github_actions_ssm" {
           "ssm:GetParameters",
           "ssm:DeleteParameter"
         ]
-        Resource = "arn:aws:ssm:${var.aws_region}:${data.aws_caller_identity.current.account_id}:parameter/edu/*"
+        Resource = "arn:aws:ssm:${var.aws_region}:${data.aws_caller_identity.current.account_id}:parameter/edu/${var.project_name}/k3s/*"
       },
       {
         Effect = "Allow"
         Action = [
           "kms:Encrypt",
-          "kms:Decrypt"
+          "kms:Decrypt",
+          "kms:GenerateDataKey*"
         ]
         Resource = "*"
       }
