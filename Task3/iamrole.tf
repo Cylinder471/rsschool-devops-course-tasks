@@ -79,11 +79,17 @@ resource "aws_iam_policy" "github_actions_ssm" {
           "kms:GenerateDataKey*"
         ]
         Resource = "*"
+      },
+      {
+        Effect = "Allow"
+        Action = [
+          "ssm:DescribeParameters"
+        ]
+        Resource = "*"
       }
     ]
   })
 }
-
 resource "aws_iam_role_policy_attachment" "github_actions_ssm_attach" {
   role       = data.aws_iam_role.github_actions_role.name
   policy_arn = aws_iam_policy.github_actions_ssm.arn
