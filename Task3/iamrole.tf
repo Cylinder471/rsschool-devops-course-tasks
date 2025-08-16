@@ -14,7 +14,30 @@ resource "aws_iam_role" "ec2_role" {
     ]
   })
 }
+resource "aws_iam_role" "GithubActionsRole" {
+  name = "GithubActionsRole"
 
+  assume_role_policy = jsonencode({
+    Version = "2012-10-17"
+    Statement = [
+      {
+        Effect = "Allow"
+        Principal = {
+          Federated = "arn:aws:iam::650251696415:oidc-provider/token.actions.githubusercontent.com"
+        }
+        Action = "sts:AssumeRoleWithWebIdentity"
+        Condition = {
+          StringEquals = {
+            "token.actions.githubusercontent.com:aud" = "sts.amazonaws.com"
+          }
+          StringLike = {
+            "token.actions.githubusercontent.com:sub" = "repo:Cylinder471/rsschool-devops-course-tasks:*"
+          }
+        }
+      }
+    ]
+  })
+}
 resource "aws_iam_policy" "k3s_worker_ssm" {
   name = "${var.project_name}-k3s-worker-ssm-policy"
 
@@ -79,8 +102,6 @@ resource "aws_iam_policy" "github_actions_ssm" {
 
 # Привязка политики к GitHub OIDC роли
 resource "aws_iam_role_policy_attachment" "github_actions_attach" {
-  role       = aws_iam_role.github_actions.name
+  role       = aws_iam_role.GithubActionsRole.name
   policy_arn = aws_iam_policy.github_actions_ssm.arn
 }
-
-data "aws_caller_identity" "current" {}
